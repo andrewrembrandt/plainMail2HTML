@@ -68,6 +68,16 @@ def get_args():
     parser.add_argument('-b', '--allow-8bit', action='store_true',
                         help='enable using 8bit for HTML message')
 
+    parser.add_argument('-mf', '--markup-format',
+                        choices=['rst', 'md'], 
+                        default='rst',
+                        const='rst',
+                        nargs='?',
+                        help='Select the markup format (e.g. reStructuredText, Markdown)')
+
+    parser.add_argument('-v', '--verbose', action='store_false',
+                        help='Output verbose error messages')
+
     return parser.parse_args()
 
 
@@ -75,6 +85,7 @@ def main():
     """The main function."""
 
     args = get_args()
+    settings.init(args.markup_format)
 
     try:
         # Obtain handle to the html parsing function
@@ -90,7 +101,7 @@ def main():
         sys.stdout.write(html_msg.as_string())
 
     except Exception as e:
-        if settings.DEBUG:
+        if args.verbose:
             import traceback
             traceback.print_exc()
         else:

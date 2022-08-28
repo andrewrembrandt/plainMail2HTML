@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html  PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN'
 	  'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
-<html lang="he" xml:lang="he" xmlns="http://www.w3.org/1999/xhtml">
+{% if charset == 'UTF-8' %}
+<html xmlns="http://www.w3.org/1999/xhtml">
+{% else %}
+<html lang="{{ locale }}" xml:lang="{{ locale }}" xmlns="http://www.w3.org/1999/xhtml">
+{% endif %}
 <head>
-<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
-<meta content="Docutils 0.7: http://docutils.sourceforge.net/" name="generator"/>
+<meta content="text/html; charset={{ charset }}" http-equiv="Content-Type"/>
+<meta content="{{ generator }}" name="generator"/>
 </head>
 <body>
-%(body)s
+{{ body|safe }}
 </body>
 </html>

@@ -24,6 +24,7 @@ Credits:
 
 """
 
+import docutils
 from docutils.core import publish_parts
 from docutils.writers.html4css1 import Writer
 from plain2html import settings
@@ -45,7 +46,10 @@ def restructuredtext(text):
     html_body = parts["html_body"]
 
     # Insert the body into the template.
-    html = load_template(settings.HTML_TEMPLATE, html_body)
+    html = load_template(
+            settings.HTML_TEMPLATE,
+            html_body,
+            f"Docutils {docutils.__version__}: http://docutils.sourceforge.net/")
 
     # Process the HTML in-place and add BIDI tags based on language
     return hibidi.hibidi_unicode(html)

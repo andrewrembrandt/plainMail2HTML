@@ -29,7 +29,8 @@ import os
 # allow for more flexibility.
 # Modify the template to your needs.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEFAULT_HTML_TEMPLATE = os.path.join(BASE_DIR, 'templates/template.html')
+TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
+DEFAULT_HTML_TEMPLATE = '/template.html'
 
 # A full path the the HTML template used for creating the HTML
 # component. For example see the template provided with this package.
@@ -49,9 +50,16 @@ RESTRUCTUREDTEXT_FILTER_SETTINGS = {
     'stylesheet_path': ''       # code, either inline or linked.
     }
 
-DEBUG = False
-
 # Define the parset to use for parsing text into HTML. This is a
 # string defining a python function. In principle you should be able
 # to use any parser, although so far I only tested reStructuredText
-HTML_PARSER = 'plain2html.markup.rst.restructuredtext'
+HTML_PARSER = ''
+
+def init(markup_format):
+    global HTML_PARSER
+
+    match markup_format:
+        case 'rst':
+            HTML_PARSER = 'plain2html.markup.rst.restructuredtext'
+        case 'md':
+            HTML_PARSER = 'plain2html.markup.md.markdown_convert'

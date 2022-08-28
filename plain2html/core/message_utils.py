@@ -23,7 +23,10 @@ Utilities for processing Email messages.
 import re
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+from locale import getdefaultlocale
 from plain2html import settings
+
 
 # List of email headers that shouldn't be copied when cloning a new
 # multipart/alternative message from at existing text/plain one.
@@ -60,13 +63,26 @@ def clone_header(header, msg_src, msg_dest):
     msg_dest[header] = value
 
 
-def load_template(template, body):
+def load_template(template, body, generator):
     """Combine message body with a template"""
     
-    fp = open(template)
-    template = fp.read()
-    fp.close()
-    return template % {'body': body}
+    jenv = Environment(
+        loader=FileSystemLoader(settings.TEMPLATE_DIR),
+        autoescape=select_autoescape()
+    )
+
+    
+    locale = getdefaultlocale()[0]
+
+    template = jenv.get_template(settings.HTML_TEMPLATE)
+    rendered = template.render(
+        body = body,
+        charset="UTF-8",
+        locale=locale,
+        generator=generator
+    )
+
+    return rendered
 
 
 
@@ -113,3 +129,4 @@ def indent_quoted_text(text):
         new_lines.append(new_line)
 
     return ''.join(new_lines)
+
