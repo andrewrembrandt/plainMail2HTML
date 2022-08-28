@@ -137,7 +137,19 @@ class MessageProcessor(object):
                                    msg.get_content_type())
 
         # TODO: assert msg is multipart-mix, first part is text-plain
-        text_part = msg.get_payload()[0]  # text msg is first in list
+        first_part = msg.get_payload()[0]  # text msg is first in list
+        text_part = None
+        already_nested = False
+        if first_part.is_multipart():
+            already_nested = True
+            for part in first_part.get_payload():
+               if part.get_content_type() == 'text/plain': 
+                   text_part = part
+            if text_part is None:
+                raise Exception("Unable to locate text multipart message")
+        else:
+            text_part = first_part
+
         if text_part.get_content_type() != 'text/plain':
             raise MessageTypeError('Expected component 1 to be '
                                    'text/plain, but got %s.' %
@@ -155,6 +167,6 @@ class MessageProcessor(object):
         # in this case the HTML message, is best and preferred.
         alt_msg.attach(text_part)
         alt_msg.attach(html_part)
-        msg.get_payload()[0] = alt_msg
+        msg.get_payload()[0].set_payload(alt_msg)
 
         return msg
