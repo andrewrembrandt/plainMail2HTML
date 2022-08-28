@@ -22,6 +22,7 @@ components to a single Email object.
 
 """
 
+import codecs
 import email
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -51,13 +52,19 @@ class MessageProcessor(object):
     def generate_html_msg_from_file(self, fp):
         """Load Email from file and add to it HTML component"""
 
-        msg = email.message_from_file(fp)
-        if msg.is_multipart():
-            html_msg = self._add_html_to_multipart(msg)
-        else:
-            html_msg = self._add_html_to_plain(msg)
+        try:
+            file_ctnt = codecs.decode(fp.buffer.read(), encoding='utf-8', errors='ignore')
+            msg = email.message_from_string(file_ctnt)
+            if msg.is_multipart():
+                html_msg = self._add_html_to_multipart(msg)
+            else:
+                html_msg = self._add_html_to_plain(msg)
 
-        return html_msg
+            return html_msg
+        except Exception as e:
+            print(f"Unable to parse file: {fp}, {e}")
+            raise
+
 
     def _create_plain_message(self, msg):
         """Create a text/plain new message"""
